@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class AdapterDevicesList(var devices: ArrayList<String>) : RecyclerView.Adapter<AdapterDevicesList.DevicesListViewHolder>() {
+class AdapterDevicesList(/*var devices: ArrayList<String>*/ var devices: ScanActivity.Devices) : RecyclerView.Adapter<AdapterDevicesList.DevicesListViewHolder>() {
     class DevicesListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val deviceName: TextView = view.findViewById(R.id.name)
         val MACAddress : TextView = view.findViewById(R.id.MAC)
@@ -22,10 +22,23 @@ class AdapterDevicesList(var devices: ArrayList<String>) : RecyclerView.Adapter<
     }
 
     override fun onBindViewHolder(holder: DevicesListViewHolder, position: Int) {
-        val device = devices[position]
-        holder.deviceName.text = device
-        //holder.deviceName.text = device.name
+        if(devices.device_name.isNotEmpty() && devices.MAC.isNotEmpty()) {
+            if(devices.device_name[position].isNullOrBlank()) {
+                holder.deviceName.text = "Inconnu"
+                val MAC = devices.MAC[position]
+                holder.MACAddress.text = MAC
+                //holder.deviceName.text = ""
+                //holder.MACAddress.text = ""
+            }
+            else {
+                val name = devices.device_name[position]
+                holder.deviceName.text = name
+                val MAC = devices.MAC[position]
+                holder.MACAddress.text = MAC
+            }
 
+            //holder.deviceName.text = device.name
+        }
     }
 
     override fun getItemCount(): Int = devices.size
