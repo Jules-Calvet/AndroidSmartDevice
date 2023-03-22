@@ -9,6 +9,7 @@ import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -96,7 +97,9 @@ class ScanActivity : AppCompatActivity() {
                     devices.add("Lab_IOT")
                     devices.add("Lab")
                     devices.add("Jules_IOT")*/
-                    binding.recyclerView.adapter = AdapterDevicesList(leDeviceListAdapter)
+                    /*binding.recyclerView.adapter = AdapterDevicesList(leDeviceListAdapter) {
+
+                    }*/
                 }
             }
         }
@@ -135,7 +138,11 @@ class ScanActivity : AppCompatActivity() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             super.onScanResult(callbackType, result)
             leDeviceListAdapter.addDevice(result.device, this@ScanActivity)
-            binding.recyclerView.adapter = AdapterDevicesList(leDeviceListAdapter)
+            binding.recyclerView.adapter = AdapterDevicesList(leDeviceListAdapter) { device, position ->
+                val intent = Intent(this@ScanActivity, BLE_details::class.java)
+                intent.putExtra("Device_name", device.device_name[position])
+                startActivity(intent)
+            }
             //leDeviceListAdapter.notifyDataSetChanged()
         }
     }
@@ -161,6 +168,10 @@ class ScanActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+
+        fun get(): Devices {
+            return this
         }
     }
 

@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class AdapterDevicesList(/*var devices: ArrayList<String>*/ var devices: ScanActivity.Devices) : RecyclerView.Adapter<AdapterDevicesList.DevicesListViewHolder>() {
+class AdapterDevicesList(/*var devices: ArrayList<String>*/ var devices: ScanActivity.Devices, val onItemClickListener: (ScanActivity.Devices, Int) -> Unit) : RecyclerView.Adapter<AdapterDevicesList.DevicesListViewHolder>() {
     class DevicesListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val deviceName: TextView = view.findViewById(R.id.name)
         val MACAddress : TextView = view.findViewById(R.id.MAC)
@@ -35,6 +35,10 @@ class AdapterDevicesList(/*var devices: ArrayList<String>*/ var devices: ScanAct
                 holder.deviceName.text = name
                 val MAC = devices.MAC[position]
                 holder.MACAddress.text = MAC
+            }
+
+            holder.itemView.setOnClickListener {
+                onItemClickListener(devices, position)
             }
 
             //holder.deviceName.text = device.name
