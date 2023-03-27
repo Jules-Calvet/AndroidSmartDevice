@@ -1,6 +1,7 @@
 package fr.isen.calvet.androidsmartdevice
 
 import android.Manifest.permission
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -33,11 +34,14 @@ class ScanActivity : AppCompatActivity() {
     private val REQUIRED_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         arrayOf(
             permission.BLUETOOTH_CONNECT,
-            permission.BLUETOOTH_SCAN
+            permission.BLUETOOTH_SCAN,
+            permission.ACCESS_FINE_LOCATION,
+            permission.ACCESS_COARSE_LOCATION
         )
     } else {
         arrayOf(
-            permission.BLUETOOTH
+            permission.ACCESS_FINE_LOCATION,
+            permission.ACCESS_COARSE_LOCATION
         )
     }
 
@@ -105,24 +109,18 @@ class ScanActivity : AppCompatActivity() {
         }
     }
 
-    //private var bluetoothLeScanner = bluetoothAdapter!!.bluetoothLeScanner
     private val handler = Handler()
-    //private var scanningBle = false
     // Stops scanning after 10 seconds.
-    private val SCAN_PERIOD: Long = 10000000
+    private val SCAN_PERIOD: Long = 10000
 
+    @SuppressLint("MissingPermission")
     private fun scanLeDevice(bluetoothLeScanner: BluetoothLeScanner, scanning : Boolean) {
         var scanningBle = scanning
         if (!scanningBle) { // Stops scanning after a pre-defined scan period.
             handler.postDelayed({
                 scanningBle = false
-                if (ActivityCompat.checkSelfPermission(
-                        this,
-                        permission.BLUETOOTH_SCAN
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    bluetoothLeScanner.stopScan(leScanCallback)
-                }
+                bluetoothLeScanner.stopScan(leScanCallback)
+
             }, SCAN_PERIOD)
             scanningBle = true
             bluetoothLeScanner.startScan(leScanCallback)
@@ -137,10 +135,11 @@ class ScanActivity : AppCompatActivity() {
     private val leScanCallback: ScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             super.onScanResult(callbackType, result)
-            leDeviceListAdapter.addDevice(result.device, this@ScanActivity)
+            leDeviceListAdapter.addDevice(result.device, result.rssi)
             binding.recyclerView.adapter = AdapterDevicesList(leDeviceListAdapter) { device, position ->
                 val intent = Intent(this@ScanActivity, BLE_details::class.java)
                 intent.putExtra("Device_name", device.device_name[position])
+                intent.putExtra("Device_address", device.MAC[position])
                 startActivity(intent)
             }
             //leDeviceListAdapter.notifyDataSetChanged()
@@ -150,28 +149,20 @@ class ScanActivity : AppCompatActivity() {
     class Devices {
         var device_name: ArrayList<String> = ArrayList()
         var MAC: ArrayList<String> = ArrayList()
+        var distance : ArrayList<Int> = ArrayList()
         var size = 0
 
-        fun addDevice(device: BluetoothDevice, context: Context) {
-            if (ActivityCompat.checkSelfPermission(
-                    context,
-                    permission.BLUETOOTH_CONNECT
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                if (!device.name.isNullOrBlank()) { //|| device.address.equals("51:6B:76:84:43:07")) {
-
-                    if(!MAC.contains(device.address)) {
-                        device_name.add(device.name)
-                        MAC.add(device.address)
-                        size++
-                        Log.d("Device", "${device.name} + $MAC")
-                    }
+        @SuppressLint("MissingPermission")
+        fun addDevice(device: BluetoothDevice, rssi : Int) {
+            if (!device.name.isNullOrBlank()) {
+                if(!MAC.contains(device.address)) {
+                    device_name.add(device.name)
+                    MAC.add(device.address)
+                    distance.add(rssi)
+                    size++
+                    Log.d("Device", "${device.name} + $MAC")
                 }
             }
-        }
-
-        fun get(): Devices {
-            return this
         }
     }
 
@@ -184,6 +175,7 @@ class ScanActivity : AppCompatActivity() {
         if (requestCode == 1) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // La permission a été accordée
+                startActivity(Intent(this, ScanActivity::class.java))
             } else {
                 Toast.makeText(
                     this,

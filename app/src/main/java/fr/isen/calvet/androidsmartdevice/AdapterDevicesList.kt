@@ -11,6 +11,7 @@ class AdapterDevicesList(/*var devices: ArrayList<String>*/ var devices: ScanAct
     class DevicesListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val deviceName: TextView = view.findViewById(R.id.name)
         val MACAddress : TextView = view.findViewById(R.id.MAC)
+        val distance : TextView = view.findViewById(R.id.distance)
         val deviceImg : ImageView = view.findViewById(R.id.imageView)
     }
 
@@ -23,19 +24,17 @@ class AdapterDevicesList(/*var devices: ArrayList<String>*/ var devices: ScanAct
 
     override fun onBindViewHolder(holder: DevicesListViewHolder, position: Int) {
         if(devices.device_name.isNotEmpty() && devices.MAC.isNotEmpty()) {
-            if(devices.device_name[position].isNullOrBlank()) {
-                holder.deviceName.text = "Inconnu"
-                val MAC = devices.MAC[position]
-                holder.MACAddress.text = MAC
-                //holder.deviceName.text = ""
-                //holder.MACAddress.text = ""
+            val name = devices.device_name[position]
+            holder.deviceName.text = name
+            val MAC = devices.MAC[position]
+            holder.MACAddress.text = MAC
+            if(devices.distance[position] >= -65) {
+                holder.deviceImg.setImageResource(R.drawable.rond_bleu)
+            } else {
+                holder.deviceImg.setImageResource(R.drawable.rond_bleu_clair)
             }
-            else {
-                val name = devices.device_name[position]
-                holder.deviceName.text = name
-                val MAC = devices.MAC[position]
-                holder.MACAddress.text = MAC
-            }
+            holder.distance.text = devices.distance[position].toString()
+
 
             holder.itemView.setOnClickListener {
                 onItemClickListener(devices, position)
