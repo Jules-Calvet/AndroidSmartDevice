@@ -6,6 +6,24 @@
     android:layout_height="match_parent"
     tools:context=".BLE_details">
 
+    <ImageView
+        android:id="@+id/led2"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/led1"
+        app:srcCompat="@drawable/lightbulb" />
+
+    <ImageView
+        android:id="@+id/led3"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toEndOf="@+id/led2"
+        app:layout_constraintTop_toTopOf="@+id/led1"
+        app:srcCompat="@drawable/lightbulb" />
+
     <TextView
         android:id="@+id/deviceName"
         android:layout_width="wrap_content"
@@ -18,4 +36,46 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewLed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:text="Affichage des différentes LEDs"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/deviceName" />
+
+    <ImageView
+        android:id="@+id/led1"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/led2"
+        app:layout_constraintTop_toBottomOf="@+id/textViewLed"
+        app:srcCompat="@drawable/lightbulb" />
+
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connexion en cours"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="led1,led2,textViewLed,led3"
+        tools:layout_editor_absoluteX="37dp"
+        tools:layout_editor_absoluteY="50dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

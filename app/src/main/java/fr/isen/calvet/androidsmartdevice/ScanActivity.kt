@@ -31,6 +31,8 @@ class ScanActivity : AppCompatActivity() {
         bluetoothManager.adapter
     }
 
+    private lateinit var bluetoothLeScanner : BluetoothLeScanner
+
     private val REQUIRED_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         arrayOf(
             permission.BLUETOOTH_CONNECT,
@@ -52,7 +54,7 @@ class ScanActivity : AppCompatActivity() {
         binding = ActivityScanBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        var bluetoothLeScanner = bluetoothAdapter!!.bluetoothLeScanner
+        bluetoothLeScanner = bluetoothAdapter!!.bluetoothLeScanner
 
 
         if (REQUIRED_PERMISSIONS.all {
@@ -85,15 +87,15 @@ class ScanActivity : AppCompatActivity() {
                         binding.textView3.setText(R.string.scanning)
                         binding.floatingActionButton.setImageResource(android.R.drawable.ic_media_pause)
                         binding.progressBar.isIndeterminate = true
-                        scanLeDevice(bluetoothLeScanner, scanning)
+                        scanLeDevice(bluetoothLeScanner/*, scanning*/)
                     } else {
                         binding.textView3.setText(R.string.toScan)
                         binding.floatingActionButton.setImageResource(android.R.drawable.ic_media_play)
                         binding.progressBar.isIndeterminate = false
-                        scanLeDevice(bluetoothLeScanner, scanning)
+                        scanLeDevice(bluetoothLeScanner/*, scanning*/)
                     }
 
-                    scanning = !scanning
+                    //scanning = !scanning
 
                     binding.recyclerView.layoutManager = LinearLayoutManager(this)
                     /*val devices: ArrayList<String> = ArrayList<String>()
@@ -109,23 +111,41 @@ class ScanActivity : AppCompatActivity() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        if(bluetoothAdapter!!.isEnabled && REQUIRED_PERMISSIONS.all {
+                ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
+            }) {
+            Log.d("SCANNING", "$scanning")
+            if(scanning) {
+                scanLeDevice(bluetoothLeScanner/*, scanning*/)
+                binding.textView3.setText(R.string.toScan)
+                binding.floatingActionButton.setImageResource(android.R.drawable.ic_media_play)
+                binding.progressBar.isIndeterminate = false
+            }
+        }
+    }
+
     private val handler = Handler()
     // Stops scanning after 10 seconds.
     private val SCAN_PERIOD: Long = 10000
 
     @SuppressLint("MissingPermission")
-    private fun scanLeDevice(bluetoothLeScanner: BluetoothLeScanner, scanning : Boolean) {
-        var scanningBle = scanning
-        if (!scanningBle) { // Stops scanning after a pre-defined scan period.
+    private fun scanLeDevice(bluetoothLeScanner: BluetoothLeScanner/*, scanning : Boolean*/) {
+        //var scanningBle = scanning
+        if (!scanning) { // Stops scanning after a pre-defined scan period.
             handler.postDelayed({
-                scanningBle = false
+                scanning = false
                 bluetoothLeScanner.stopScan(leScanCallback)
+                binding.textView3.setText(R.string.toScan)
+                binding.floatingActionButton.setImageResource(android.R.drawable.ic_media_play)
+                binding.progressBar.isIndeterminate = false
 
             }, SCAN_PERIOD)
-            scanningBle = true
+            scanning = true
             bluetoothLeScanner.startScan(leScanCallback)
         } else {
-            scanningBle = false
+            scanning = false
             bluetoothLeScanner.stopScan(leScanCallback)
         }
     }
@@ -141,6 +161,7 @@ class ScanActivity : AppCompatActivity() {
                 intent.putExtra("Device_name", device.device_name[position])
                 intent.putExtra("Device_address", device.MAC[position])
                 startActivity(intent)
+                onPause()
             }
             //leDeviceListAdapter.notifyDataSetChanged()
         }
