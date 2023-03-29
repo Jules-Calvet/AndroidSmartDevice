@@ -27,7 +27,7 @@ class AdapterDevicesList(var devices: ScanActivity.Devices, val onItemClickListe
         holder.deviceName.text = name
         val MAC = devices.MAC[position]
         holder.MACAddress.text = MAC
-        if(devices.distance[position] >= -65) {
+        if(devices.distance[position] >= -75) {
             holder.deviceImg.setImageResource(R.drawable.rond_bleu)
         } else {
             holder.deviceImg.setImageResource(R.drawable.rond_bleu_clair)

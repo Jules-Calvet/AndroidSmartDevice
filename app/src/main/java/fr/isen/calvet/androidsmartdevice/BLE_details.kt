@@ -29,6 +29,10 @@ class BLE_details : AppCompatActivity() {
 
     private var notifications = false
 
+    private var ledBlueOn = false
+    private var ledGreenOn = false
+    private var ledRedOn = false
+
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,53 +47,75 @@ class BLE_details : AppCompatActivity() {
         val device = bluetoothAdapter!!.getRemoteDevice(deviceAddress)
         bluetoothGatt = device.connectGatt(this, false, gattCallback)
 
-        var ledBlueOn = false
-        var ledGreenOn = false
-        var ledRedOn = false
-
         hide()
 
         binding.led1.setOnClickListener {
-            if(ledBlueOn) {
-                binding.led1.clearColorFilter()
-                sendCommand(byteArrayOf(0x00))
-            } else {
-                binding.led1.setColorFilter(Color.BLUE)
-                sendCommand(byteArrayOf(0x01))
-                binding.led2.clearColorFilter()
-                binding.led3.clearColorFilter()
-                ledGreenOn = false
-                ledRedOn = false
-            }
-            ledBlueOn = !ledBlueOn
+            toggleLed("blue")
         }
         binding.led2.setOnClickListener {
-            if(ledGreenOn) {
-                binding.led2.clearColorFilter()
-                sendCommand(byteArrayOf(0x00))
-            } else {
-                binding.led2.setColorFilter(Color.GREEN)
-                sendCommand(byteArrayOf(0x02))
-                binding.led1.clearColorFilter()
-                binding.led3.clearColorFilter()
+            toggleLed("green")
+        }
+        binding.led3.setOnClickListener {
+            toggleLed("red")
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun onPause() {
+        super.onPause()
+        bluetoothGatt?.close()
+    }
+
+    fun toggleLed(color: String) {
+        reset(color)
+        when(color) {
+            "blue" -> {
+                if(ledBlueOn) {
+                    sendCommand(byteArrayOf(0x00))
+                } else {
+                    binding.led1.setColorFilter(Color.BLUE)
+                    sendCommand(byteArrayOf(0x01))
+                }
+                ledBlueOn = !ledBlueOn
+            }
+            "green" -> {
+                if(ledGreenOn) {
+                    sendCommand(byteArrayOf(0x00))
+                } else {
+                    binding.led2.setColorFilter(Color.GREEN)
+                    sendCommand(byteArrayOf(0x02))
+                }
+                ledGreenOn = !ledGreenOn
+            }
+            "red" -> {
+                if(ledRedOn) {
+                    sendCommand(byteArrayOf(0x00))
+                } else {
+                    binding.led3.setColorFilter(Color.RED)
+                    sendCommand(byteArrayOf(0x03))
+                }
+                ledRedOn = !ledRedOn
+            }
+        }
+    }
+
+    fun reset(color: String) {
+        binding.led1.clearColorFilter()
+        binding.led2.clearColorFilter()
+        binding.led3.clearColorFilter()
+        when(color) {
+            "blue" -> {
+                ledGreenOn = false
+                ledRedOn = false
+            }
+            "green" -> {
                 ledBlueOn = false
                 ledRedOn = false
             }
-            ledGreenOn = !ledGreenOn
-        }
-        binding.led3.setOnClickListener {
-            if(ledRedOn) {
-                binding.led3.clearColorFilter()
-                sendCommand(byteArrayOf(0x00))
-            } else {
-                binding.led3.setColorFilter(Color.RED)
-                sendCommand(byteArrayOf(0x03))
-                binding.led1.clearColorFilter()
-                binding.led2.clearColorFilter()
+            "red" -> {
                 ledBlueOn = false
                 ledGreenOn = false
             }
-            ledRedOn = !ledRedOn
         }
     }
 

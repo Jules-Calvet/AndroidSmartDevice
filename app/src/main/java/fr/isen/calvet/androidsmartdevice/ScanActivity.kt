@@ -55,7 +55,6 @@ class ScanActivity : AppCompatActivity() {
 
         bluetoothLeScanner = bluetoothAdapter!!.bluetoothLeScanner
 
-
         if (REQUIRED_PERMISSIONS.all {
                 ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
         }) {
@@ -86,12 +85,12 @@ class ScanActivity : AppCompatActivity() {
                         binding.textView3.setText(R.string.scanning)
                         binding.floatingActionButton.setImageResource(android.R.drawable.ic_media_pause)
                         binding.progressBar.isIndeterminate = true
-                        scanLeDevice(bluetoothLeScanner)
+                        scanLeDevice()
                     } else {
                         binding.textView3.setText(R.string.toScan)
                         binding.floatingActionButton.setImageResource(android.R.drawable.ic_media_play)
                         binding.progressBar.isIndeterminate = false
-                        scanLeDevice(bluetoothLeScanner)
+                        scanLeDevice()
                     }
 
                     binding.recyclerView.layoutManager = LinearLayoutManager(this)
@@ -107,7 +106,7 @@ class ScanActivity : AppCompatActivity() {
             }) {
             Log.d("SCANNING", "$scanning")
             if(scanning) {
-                scanLeDevice(bluetoothLeScanner)
+                scanLeDevice()
                 binding.textView3.setText(R.string.toScan)
                 binding.floatingActionButton.setImageResource(android.R.drawable.ic_media_play)
                 binding.progressBar.isIndeterminate = false
@@ -121,7 +120,7 @@ class ScanActivity : AppCompatActivity() {
     private val SCAN_PERIOD: Long = 10000
 
     @SuppressLint("MissingPermission")
-    private fun scanLeDevice(bluetoothLeScanner: BluetoothLeScanner) {
+    private fun scanLeDevice() {
         if (!scanning) { // Stops scanning after a pre-defined scan period.
             handler.postDelayed({
                 scanning = false
@@ -150,7 +149,6 @@ class ScanActivity : AppCompatActivity() {
                 intent.putExtra("Device_name", device.device_name[position])
                 intent.putExtra("Device_address", device.MAC[position])
                 startActivity(intent)
-                onPause()
             }
         }
     }
