@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package fr.isen.calvet.androidsmartdevice
 
 import android.annotation.SuppressLint
@@ -167,6 +169,7 @@ class BLE_details : AppCompatActivity() {
                 }
             }
         }
+        @Deprecated("Deprecated in Java")
         override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
             if(characteristic?.uuid == characteristicButtonUUID) {
                 val value = characteristic?.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0)
@@ -197,7 +200,7 @@ class BLE_details : AppCompatActivity() {
     fun sendCommand(command: ByteArray) {
         val service = bluetoothGatt?.getService(serviceUUID)
         val characteristic = service?.getCharacteristic(characteristicLedUUID)
-        characteristic?.setValue(command)
+        characteristic?.value = command
         bluetoothGatt?.writeCharacteristic(characteristic)
     }
 }
