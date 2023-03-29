@@ -152,8 +152,6 @@ class BLE_details : AppCompatActivity() {
                     // Les services GATT du périphérique ont été découverts avec succès.
                     Log.d("STATUS", "Services discovered successfully.")
                     val service = gatt?.getService(serviceUUID)
-                    //val characteristicLed = service?.getCharacteristic(characteristicLedUUID)
-                    //characteristicLed?.let { enableNotifications(it) }
                     val characteristicButton = service?.getCharacteristic(characteristicButtonUUID)
                     binding.checkBox.setOnClickListener {
                         if(!notifications) {

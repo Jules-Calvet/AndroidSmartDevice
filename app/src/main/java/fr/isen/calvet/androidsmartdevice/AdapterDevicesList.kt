@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class AdapterDevicesList(/*var devices: ArrayList<String>*/ var devices: ScanActivity.Devices, val onItemClickListener: (ScanActivity.Devices, Int) -> Unit) : RecyclerView.Adapter<AdapterDevicesList.DevicesListViewHolder>() {
+class AdapterDevicesList(var devices: ScanActivity.Devices, val onItemClickListener: (ScanActivity.Devices, Int) -> Unit) : RecyclerView.Adapter<AdapterDevicesList.DevicesListViewHolder>() {
     class DevicesListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val deviceName: TextView = view.findViewById(R.id.name)
         val MACAddress : TextView = view.findViewById(R.id.MAC)
@@ -23,24 +23,19 @@ class AdapterDevicesList(/*var devices: ArrayList<String>*/ var devices: ScanAct
     }
 
     override fun onBindViewHolder(holder: DevicesListViewHolder, position: Int) {
-        if(devices.device_name.isNotEmpty() && devices.MAC.isNotEmpty()) {
-            val name = devices.device_name[position]
-            holder.deviceName.text = name
-            val MAC = devices.MAC[position]
-            holder.MACAddress.text = MAC
-            if(devices.distance[position] >= -65) {
-                holder.deviceImg.setImageResource(R.drawable.rond_bleu)
-            } else {
-                holder.deviceImg.setImageResource(R.drawable.rond_bleu_clair)
-            }
-            holder.distance.text = devices.distance[position].toString()
+        val name = devices.device_name[position]
+        holder.deviceName.text = name
+        val MAC = devices.MAC[position]
+        holder.MACAddress.text = MAC
+        if(devices.distance[position] >= -65) {
+            holder.deviceImg.setImageResource(R.drawable.rond_bleu)
+        } else {
+            holder.deviceImg.setImageResource(R.drawable.rond_bleu_clair)
+        }
+        holder.distance.text = devices.distance[position].toString()
 
-
-            holder.itemView.setOnClickListener {
-                onItemClickListener(devices, position)
-            }
-
-            //holder.deviceName.text = device.name
+        holder.itemView.setOnClickListener {
+            onItemClickListener(devices, position)
         }
     }
 

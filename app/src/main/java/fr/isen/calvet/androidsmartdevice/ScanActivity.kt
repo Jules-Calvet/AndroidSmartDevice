@@ -23,7 +23,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import fr.isen.calvet.androidsmartdevice.databinding.ActivityScanBinding
 
-
 class ScanActivity : AppCompatActivity() {
     private lateinit var binding: ActivityScanBinding
     private val bluetoothAdapter: BluetoothAdapter? by lazy(LazyThreadSafetyMode.NONE) {
@@ -87,25 +86,15 @@ class ScanActivity : AppCompatActivity() {
                         binding.textView3.setText(R.string.scanning)
                         binding.floatingActionButton.setImageResource(android.R.drawable.ic_media_pause)
                         binding.progressBar.isIndeterminate = true
-                        scanLeDevice(bluetoothLeScanner/*, scanning*/)
+                        scanLeDevice(bluetoothLeScanner)
                     } else {
                         binding.textView3.setText(R.string.toScan)
                         binding.floatingActionButton.setImageResource(android.R.drawable.ic_media_play)
                         binding.progressBar.isIndeterminate = false
-                        scanLeDevice(bluetoothLeScanner/*, scanning*/)
+                        scanLeDevice(bluetoothLeScanner)
                     }
 
-                    //scanning = !scanning
-
                     binding.recyclerView.layoutManager = LinearLayoutManager(this)
-                    /*val devices: ArrayList<String> = ArrayList<String>()
-                    devices.add("Jules")
-                    devices.add("Lab_IOT")
-                    devices.add("Lab")
-                    devices.add("Jules_IOT")*/
-                    /*binding.recyclerView.adapter = AdapterDevicesList(leDeviceListAdapter) {
-
-                    }*/
                 }
             }
         }
@@ -118,7 +107,7 @@ class ScanActivity : AppCompatActivity() {
             }) {
             Log.d("SCANNING", "$scanning")
             if(scanning) {
-                scanLeDevice(bluetoothLeScanner/*, scanning*/)
+                scanLeDevice(bluetoothLeScanner)
                 binding.textView3.setText(R.string.toScan)
                 binding.floatingActionButton.setImageResource(android.R.drawable.ic_media_play)
                 binding.progressBar.isIndeterminate = false
@@ -132,8 +121,7 @@ class ScanActivity : AppCompatActivity() {
     private val SCAN_PERIOD: Long = 10000
 
     @SuppressLint("MissingPermission")
-    private fun scanLeDevice(bluetoothLeScanner: BluetoothLeScanner/*, scanning : Boolean*/) {
-        //var scanningBle = scanning
+    private fun scanLeDevice(bluetoothLeScanner: BluetoothLeScanner) {
         if (!scanning) { // Stops scanning after a pre-defined scan period.
             handler.postDelayed({
                 scanning = false
@@ -164,7 +152,6 @@ class ScanActivity : AppCompatActivity() {
                 startActivity(intent)
                 onPause()
             }
-            //leDeviceListAdapter.notifyDataSetChanged()
         }
     }
 
