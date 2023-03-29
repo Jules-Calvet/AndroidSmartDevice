@@ -21,7 +21,11 @@ class BLE_details : AppCompatActivity() {
     private var bluetoothGatt: BluetoothGatt? = null
 
     private val serviceUUID = UUID.fromString("0000feed-cc7a-482a-984a-7f2ed5b3e58f")
-    private val characteristicUUID = UUID.fromString("0000abcd-8e22-4541-9d4c-21edae82ed19")
+    private val characteristicLedUUID = UUID.fromString("0000abcd-8e22-4541-9d4c-21edae82ed19")
+    private val characteristicButtonUUID = UUID.fromString("00001234-8e22-4541-9d4c-21edae82ed19")
+    private val configNotifications = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
+
+    private var notifications = false
 
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,6 +95,7 @@ class BLE_details : AppCompatActivity() {
         runOnUiThread {
             binding.group.visibility = View.VISIBLE
             binding.status.visibility = View.GONE
+            binding.reconnect.visibility = View.GONE
         }
     }
 
@@ -99,6 +104,12 @@ class BLE_details : AppCompatActivity() {
             binding.group.visibility = View.GONE
             binding.status.visibility = View.VISIBLE
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun reconnect() {
+        val device = bluetoothAdapter!!.getRemoteDevice(intent.getStringExtra("Device_address"))
+        bluetoothGatt = device.connectGatt(this, false, gattCallback)
     }
 
     // Définissez une implémentation de BluetoothGattCallback pour gérer les événements de connexion.
@@ -119,6 +130,13 @@ class BLE_details : AppCompatActivity() {
                     hide()
                     // Fermez la connexion.
                     bluetoothGatt?.close()
+                    runOnUiThread {
+                        binding.reconnect.visibility = View.VISIBLE
+                    }
+                    binding.reconnect.setOnClickListener {
+                        reconnect()
+                    }
+
                 }
                 else -> {
                     Log.d("STATUS", "Connection state changed: $newState")
@@ -132,8 +150,16 @@ class BLE_details : AppCompatActivity() {
                     // Les services GATT du périphérique ont été découverts avec succès.
                     Log.d("STATUS", "Services discovered successfully.")
                     val service = gatt?.getService(serviceUUID)
-                    val characteristic = service?.getCharacteristic(characteristicUUID)
-                    characteristic?.let { enableNotifications(it) }
+                    //val characteristicLed = service?.getCharacteristic(characteristicLedUUID)
+                    //characteristicLed?.let { enableNotifications(it) }
+                    val characteristicButton = service?.getCharacteristic(characteristicButtonUUID)
+                    binding.checkBox.setOnClickListener {
+                        if(!notifications) {
+                            characteristicButton?.let { enableNotifications(it) }
+                        } else {
+                            characteristicButton?.let { disableNotifications(it) }
+                        }
+                    }
                     // Vous pouvez maintenant parcourir les services et les caractéristiques du périphérique.
                 }
                 else -> {
@@ -142,19 +168,35 @@ class BLE_details : AppCompatActivity() {
             }
         }
         override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
-            val value = characteristic?.toString()
-            Log.d("Bluetooth", "Received value: $value")
+            if(characteristic?.uuid == characteristicButtonUUID) {
+                val value = characteristic?.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0)
+                runOnUiThread {
+                    binding.nombre.text = value.toString()
+                }
+
+                Log.d("Bluetooth", "Received value: $value")
+            }
         }
     }
 
     @SuppressLint("MissingPermission")
     fun enableNotifications(characteristic: BluetoothGattCharacteristic) {
+        val descriptor = characteristic.getDescriptor(configNotifications)
+        descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+        bluetoothGatt?.writeDescriptor(descriptor)
         bluetoothGatt?.setCharacteristicNotification(characteristic, true)
+        notifications = true
     }
+    @SuppressLint("MissingPermission")
+    fun disableNotifications(characteristic: BluetoothGattCharacteristic) {
+        bluetoothGatt?.setCharacteristicNotification(characteristic, false)
+        notifications = false
+    }
+
     @SuppressLint("MissingPermission")
     fun sendCommand(command: ByteArray) {
         val service = bluetoothGatt?.getService(serviceUUID)
-        val characteristic = service?.getCharacteristic(characteristicUUID)
+        val characteristic = service?.getCharacteristic(characteristicLedUUID)
         characteristic?.setValue(command)
         bluetoothGatt?.writeCharacteristic(characteristic)
     }

@@ -74,8 +74,55 @@
         android:id="@+id/group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="led1,led2,textViewLed,led3"
+        app:constraint_referenced_ids="led1,led2,textViewLed,led3,textNombre,checkBox,textAbonnement,nombre"
         tools:layout_editor_absoluteX="37dp"
         tools:layout_editor_absoluteY="50dp" />
+
+    <TextView
+        android:id="@+id/textAbonnement"
+        android:layout_width="185dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="32dp"
+        android:text="Abonnez vous pour recevoir le nombre d'incrémentation"
+        app:layout_constraintStart_toStartOf="@+id/led1"
+        app:layout_constraintTop_toBottomOf="@+id/led1" />
+
+    <TextView
+        android:id="@+id/textNombre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Nombre : "
+        app:layout_constraintStart_toStartOf="@+id/textAbonnement"
+        app:layout_constraintTop_toBottomOf="@+id/textAbonnement" />
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Recevoir"
+        app:layout_constraintBottom_toBottomOf="@+id/textAbonnement"
+        app:layout_constraintStart_toEndOf="@+id/textAbonnement"
+        app:layout_constraintTop_toTopOf="@+id/textAbonnement" />
+
+    <TextView
+        android:id="@+id/nombre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:text="nombre"
+        app:layout_constraintStart_toEndOf="@+id/textNombre"
+        app:layout_constraintTop_toTopOf="@+id/textNombre" />
+
+    <Button
+        android:id="@+id/reconnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Try reconnecting ?"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/status" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
