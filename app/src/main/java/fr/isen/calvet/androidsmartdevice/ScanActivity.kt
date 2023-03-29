@@ -15,7 +15,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -32,6 +31,7 @@ class ScanActivity : AppCompatActivity() {
 
     private lateinit var bluetoothLeScanner : BluetoothLeScanner
 
+    //Array containing needed permissions
     private val REQUIRED_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         arrayOf(
             permission.BLUETOOTH_CONNECT,
@@ -104,7 +104,7 @@ class ScanActivity : AppCompatActivity() {
         if(bluetoothAdapter!!.isEnabled && REQUIRED_PERMISSIONS.all {
                 ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
             }) {
-            Log.d("SCANNING", "$scanning")
+            //stop callBack when changing activity
             if(scanning) {
                 scanLeDevice()
                 binding.textView3.setText(R.string.toScan)
@@ -161,13 +161,13 @@ class ScanActivity : AppCompatActivity() {
 
         @SuppressLint("MissingPermission")
         fun addDevice(device: BluetoothDevice, rssi : Int) {
+            //verify if there is a name and if we already scanned the device
             if (!device.name.isNullOrBlank()) {
                 if(!MAC.contains(device.address)) {
                     device_name.add(device.name)
                     MAC.add(device.address)
                     distance.add(rssi)
                     size++
-                    Log.d("Device", "${device.name} + $MAC")
                 }
             }
         }

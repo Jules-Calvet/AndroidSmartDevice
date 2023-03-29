@@ -119,6 +119,7 @@ class BLE_details : AppCompatActivity() {
         }
     }
 
+    //Show connect tools in the UI
     fun show() {
         runOnUiThread {
             binding.group.visibility = View.VISIBLE
@@ -127,6 +128,7 @@ class BLE_details : AppCompatActivity() {
         }
     }
 
+    //Hide connect tools in the UI
     fun hide() {
         runOnUiThread {
             binding.group.visibility = View.GONE
@@ -164,7 +166,6 @@ class BLE_details : AppCompatActivity() {
                     binding.reconnect.setOnClickListener {
                         reconnect()
                     }
-
                 }
                 else -> {
                     Log.d("STATUS", "Connection state changed: $newState")
@@ -186,7 +187,6 @@ class BLE_details : AppCompatActivity() {
                             characteristicButton?.let { disableNotifications(it) }
                         }
                     }
-                    // Vous pouvez maintenant parcourir les services et les caractéristiques du périphérique.
                 }
                 else -> {
                     Log.d("STATUS", "Service discovery failed: $status")
