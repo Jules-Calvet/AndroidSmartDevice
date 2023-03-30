@@ -48,6 +48,7 @@ class BLE_details : AppCompatActivity() {
         bluetoothGatt = device.connectGatt(this, false, gattCallback)
 
         hide()
+        binding.nombre.text = ""
 
         binding.led1.setOnClickListener {
             toggleLed("blue")
@@ -116,6 +117,15 @@ class BLE_details : AppCompatActivity() {
                 ledBlueOn = false
                 ledGreenOn = false
             }
+            "all" -> {
+                ledBlueOn = false
+                ledGreenOn = false
+                ledRedOn = false
+                runOnUiThread {
+                    binding.nombre.text = "0"
+                    binding.checkBox.performClick()
+                }
+            }
         }
     }
 
@@ -158,6 +168,7 @@ class BLE_details : AppCompatActivity() {
                     // Le périphérique a été déconnecté.
                     Log.d("STATUS", "Disconnected from GATT server.")
                     hide()
+                    reset("all")
                     // Fermez la connexion.
                     bluetoothGatt?.close()
                     runOnUiThread {
